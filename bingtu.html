@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+
+  .navbar {
+    overflow: hidden;
+    background-color: #333;
+  }  
+
+  .navbar a {
+    float: left;
+    font-size: 16px;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  .navbar a:hover, .dropdown:hover .dropbtn {
+    background-color: red;}
+
+  .dropbtn {
+    background-color: #539a5c;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {background-color: #ddd;}
+  
+  .dropdown:hover .dropdown-content {display: block;}
+  
+  .dropdown:hover .dropbtn {background-color: #3e8e41;}
+  </style>
+  </head>
+
+<body>
+  <div class="navbar">
+    <a href="./2.html">首页</a>
+    <a href="./zhuzhuangtu.html">硫氧化物排放柱状图</a>
+    <a href="./zhuzhuangtu2.html">氮氧化物排放柱状图</a>
+    <a href="./bingtu.html">空气污染物成分饼状图</a>
+    <a href="./scatter-simple.html">散点图</a>
+
+  </div> 
+  <h2>部分国家空气污染物排放成分柱状图</h2>
+    <p>将鼠标移到按钮上以打开下拉菜单。</p>
+    
+    <div class="dropdown">
+      <button class="dropbtn">选择国家</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="update1(data1)" >Australia</a>
+        <a href="#" onclick="update1(data2)" >Canada</a>
+        <a href="#" onclick="update1(data3)" >Denmark</a>
+        <a href="#" onclick="update1(data4)" >Poland</a>
+        <a href="#" onclick="update1(data5)" >Spain</a>
+        <a href="#" onclick="update1(data6)" >United Kingdom</a>
+        <a href="#" onclick="update1(data7)" >Japan</a>
+        <a href="#" onclick="update1(data8)" >France</a>
+      </div>
+    </div>
+  <div>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  
+  
+  <!-- Create a div where the graph will take place -->
+  <div id="my_dataviz1"></div>
+  <p>a：硫氧化物 b：氮氧化物 c:一氧化碳 d：非甲烷挥发性有机化合物</p>
+  
+  <script>
+  
+    // set the dimensions and margins of the graph
+      var width = 1000
+          height = 600
+          margin = 40
+      
+    
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+      var radius = Math.min(width, height) / 2 - margin-20
+    
+    // append the svg object to the div called 'my_dataviz'
+      var svg = d3.select("#my_dataviz1")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(650, 300)");
+        
+        
+    
+    // create data_set
+      var data1 = {a: 2221.7, b: 2800.5, c:2583.8, d:1143.2}
+      var data2 = {a: 640.6, b: 1319.5, c:4594.5, d:1399.5}
+      var data3 = {a: 8.5, b: 88.7, c:191.8, d:1143}
+      var data4 = {a: 392.3, b: 589.5, c:2520.3, d:715.3}
+      var data5 = {a: 122.7, b: 617.5, c:1634.9, d:549.2}
+      var data6 = {a: 125.4, b: 677.5, c:1270.9, d:781.0}
+      var data7 = {a: 337.3, b: 1044.2, c:2760.1, d:822.5}
+      var data8 = {a: 88.6, b: 750.8, c:2704.2, d:1163.7}
+    
+    
+      // set the color scale
+      var color = d3.scaleOrdinal()
+        .domain(["a", "b", "c", "d", "e", "f"])
+        .range(d3.schemeDark2);
+    
+    // A function that create / update the plot for a given variable:
+    function update1(data) {
+  
+  // Compute the position of each group on the pie:
+    var pie = d3.pie()
+    .value(function(d) {return d.value; })
+    .sort(function(a, b) { console.log(a) ; return d3.ascending(a.key, b.key);} ) // This make sure that group order remains the same in the pie chart
+    var data_ready = pie(d3.entries(data))
+  
+  // map to data
+    var u = svg.selectAll("path")
+    .data(data_ready)
+  
+  // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    u
+      .enter()
+      .append('path')
+      .merge(u)
+      .transition()
+      .duration(1000)
+      .attr('d', d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius))
+      .attr('fill', function(d){ return(color(d.data.key)) })
+      .attr("stroke", "white")
+      .style("stroke-width", "2px")
+      .style("opacity", 1)
+  
+  // Update the text labels
+    var text = svg.selectAll('text')
+      .data(data_ready);
+  
+    text
+      .enter()
+      .append('text')
+      .merge(text)
+      .text(function(d) { return d.data.key + ": " + d.data.value +"千吨"; })
+      .attr('transform', function(d) { 
+        var pos = d3.arc().innerRadius(0).outerRadius(radius).centroid(d);
+        return 'translate(' + pos[0] + ',' + pos[1] + ')';})
+      .style('text-anchor', 'middle')
+      .style('font-size', 14);
+  
+  // remove the group that is not present anymore
+    text
+      .exit()
+      .remove()
+  
+  // remove the group that is not present anymore
+    u
+      .exit()
+      .remove()
+    }
+   
+    // Initialize the plot with the first dataset
+      update1(data1)
+    
+    </script>
+  </div>
+</body>

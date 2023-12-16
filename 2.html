@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("puzzle.webp");
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.hero-text {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+.hero-text button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 10px 25px;
+  color: black;
+  background-color: #dbcaca;
+  text-align: center;
+  cursor: pointer;
+}
+
+.hero-text button:hover {
+  background-color: #555;
+  color: rgb(37, 34, 34);
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+</style>
+</head>
+<body>
+
+<div class="hero-image">
+  <div class="hero-text">
+    <h1 style="font-size:46px">部分国家空气污染物排放数据可视化</h1>
+    <p>点击选择</p>
+    <div><button><a href="./zhuzhuangtu.html">2001-2021年部分国家硫氧化物排放量柱状图</a></button></div>
+    <div style = "height: 10px"></div>
+    <div><button><a href="./zhuzhuangtu2.html">2001-2021年部分国家氮氧化物排放柱状图</a></button></div>
+    <div style = "height: 10px"></div>
+    <div><button><a href="./bingtu.html">部分国家空气污染物排放成分饼状图</a></div></button>
+    <div style = "height: 10px"></div>
+    
+    <div><button><a href="./scatter-simple.html">散点图</a></button></div>
+  </div>
+</div>
+
+
+
+</body>
+</html>

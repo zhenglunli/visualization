@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Scatter-Animation</title>
+    <script src="d3.min.js"></script>
+    <style>
+        .navbar {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .navbar a {
+            float: left;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        .navbar a:hover,
+        .dropdown:hover .dropbtn {
+            background-color: red;
+        }
+    </style>
+</head>
+<div class="navbar">
+    <a href="./2.html">首页</a>
+    <a href="./zhuzhuangtu.html">硫氧化物排放柱状图</a>
+    <a href="./zhuzhuangtu2.html">氮氧化物排放柱状图</a>
+    <a href="./bingtu.html">空气污染物成分饼状图</a>
+    <a href="./scatter-simple.html">散点图</a>
+
+</div>
+
+<body style="text-align: center">
+    <svg width="1300" height="750" id="mainsvg" class="svgs"
+        style="background-color: #ffffff;display: block; margin: 0 auto;"></svg>
+    <script>
+        // get main SVG and its attributes & setting hyper-parameters; 
+        const svg = d3.select('#mainsvg');
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+        const margin = { top: 100, right: 120, bottom: 100, left: 120 };
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom -40;
+        const xValue = d => d['排放量'];
+        const yValue = d => d['排放量2'];
+        const rValue = d => (d['排放量'] + d['排放量2']) * 0.02;
+        const keyValue = d => d['地区'];
+        let xScale, yScale;
+        let maxX, maxY;
+        let aduration = 1000;
+
+        const xAxisLabel = '硫氧化物排放量（千吨）';
+        const yAxisLabel = '氮氧化物排放量（千吨）';
+
+        const color = {
+            "Canada": "#ff1c12",
+            "Australia": "#de5991",
+            "Spain": "#759AA0",
+            "Japan": "#E69D87",
+            "Denmark": "#be3259",
+            "Poland": "#EA7E53",
+            "France": "#EEDD78",
+            "UK": "#9359b1",
+        }
+
+        const renderinit = function (data, seq) {
+            xScale = d3.scaleLinear()
+                .domain(d3.extent(data, xValue)) // "extent" is equivalent to [d3.min(data, xValue), d3.max(data, xValue)]; 
+                .range([0, innerWidth])
+                .nice();
+
+            yScale = d3.scaleLinear()
+                .domain(d3.extent(data, yValue).reverse()) // remember to use reverse() to make y-axis start from the bottom; 
+                .range([0, innerHeight])
+                .nice();
+
+            maxX = xScale(d3.max(data, xValue));
+            maxY = yScale(d3.max(data, yValue));
+
+            // The reason of using group is that nothing is rendered outside svg, so margin of svg is always blank while margin of group is rendered inside svg; 
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`)
+                .attr('id', 'maingroup');
+
+            // Adding axes; 
+            const yAxis = d3.axisLeft(yScale)
+                .tickSize(-innerWidth)
+                .tickPadding(10); // .tickPadding is used to prevend intersection of ticks; 
+            const xAxis = d3.axisBottom(xScale)
+                .tickSize(-innerHeight)
+                .tickPadding(10);
+
+            let yAxisGroup = g.append('g').call(yAxis)
+                .attr('id', 'yaxis');
+            yAxisGroup.append('text')
+                .attr('font-size', '2em')
+                .attr('transform', `rotate(-90)`)
+                .attr('x', -innerHeight / 2)
+                .attr('y', -60)
+                .attr('fill', '#333333')
+                .text(yAxisLabel)
+                .attr('text-anchor', 'middle') // Make label at the middle of axis. 
+
+            let xAxisGroup = g.append('g').call(xAxis)
+                .attr('transform', `translate(${0}, ${innerHeight})`)
+                .attr('id', 'xaxis');
+            xAxisGroup.append('text')
+                .attr('font-size', '2em')
+                .attr('y', 60)
+                .attr('x', innerWidth / 2)
+                .attr('fill', '#333333')
+                .text(xAxisLabel);
+
+            let legend_color = Object.values(color);
+            let legend_text = Object.keys(color);
+            // draw legend
+            var legend = d3.select('#maingroup').selectAll(".legend")
+                .data(legend_text).join('g')
+                .attr("class", "legend")
+                .attr("transform", function (d, i) { return "translate(" + (innerWidth + 10) + "," + (i * 25 + 300) + ")"; });
+
+            // draw legend colored rectangles
+            legend.append("rect")
+                .data(legend_color)
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", 30)
+                .attr("height", 20)
+                .style("fill", d => d);
+
+            // draw legend text
+            legend.append("text")
+                .attr("x", 40)
+                .attr("y", 9)
+                .attr("dy", ".5em")
+                .attr("text-anchor", "start")
+                .text(d => d);
+
+            // date
+            g.append("text")
+                .attr('id', 'date_text')
+                .attr("x", innerWidth / 4 + 30)
+                .attr("y", innerHeight / 10 - 20)
+                .attr("dy", ".5em")
+                .style("text-anchor", "end")
+                .attr("fill", "#504f4f")
+                .attr('font-size', '6em')
+                .attr('font-weight', 'bold')
+                .text(' ');
+        };
+
+        const renderupdate = async function (seq) {
+            const g = d3.select('#maingroup');
+
+            d3.select('#date_text').text(seq[0]['日期']);
+
+            let transition = d3.transition().duration(aduration).ease(d3.easeLinear);
+
+            let circleupdates = g.selectAll('circle').data(seq).join('circle')
+                .attr('fill', d => color[keyValue(d)])
+                .attr('opacity', .8)
+                .transition(transition)
+                .attr('cy', d => yScale(yValue(d)))
+                .attr('cx', d => xScale(xValue(d)))
+                .attr('r', d => rValue(d));
+
+            let textupdates = g.selectAll('.province_text').data(seq).join('text')
+                .attr("class", "province_text")
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .attr("fill", "#333333")
+                .text(d => keyValue(d))
+                .transition(transition)
+                .attr('x', d => xScale(xValue(d)))
+                .attr('y', d => yScale(yValue(d)));
+
+            await transition.end();
+        };
+
+        d3.csv('sox.csv').then(async function (data) {
+            data = data.filter(d => { return keyValue(d) !== '总计' });
+            data.forEach(datum => {
+                // pre-process the data; 
+                datum['排放量'] = +(datum['排放量']);
+                datum['排放量2'] = +(datum['排放量2']);
+            });
+
+            // remove duplicated items; 
+            alldates = Array.from(new Set(data.map(datum => datum['日期'])));
+
+            // make sure dates are listed according to real time order; 
+            alldates = alldates.sort(function (a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            // re-arrange the data sequentially; 
+            sequential = [];
+            alldates.forEach(datum => {
+                sequential.push([]);
+            });
+            data.forEach(datum => {
+                sequential[alldates.indexOf(datum['日期'])].push(datum);
+            });
+
+            renderinit(data, sequential[0]);
+
+            for (let i = 0; i < sequential.length; i++) {
+                await renderupdate(sequential[i]);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

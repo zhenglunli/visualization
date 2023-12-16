@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://d3js.org/d3.v4.js"></script>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<style>
+
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+
+
+.dropbtn {
+  background-color: #539a5c;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+
+</style>
+</head>
+<body>
+
+<div class="navbar">
+    <a href="./2.html">首页</a>
+    <a href="./zhuzhuangtu.html">硫氧化物排放柱状图</a>
+    <a href="./zhuzhuangtu2.html">氮氧化物排放柱状图</a>
+    <a href="./bingtu.html">空气污染物成分饼状图</a>
+    <a href="./scatter-simple.html">散点图</a>
+
+  </div> 
+
+
+</body>
+<h2>部分国家空气污染物排放成分柱状图</h2>
+    <p>将鼠标移到按钮上以打开下拉菜单。</p>
+    
+    <div class="dropdown">
+      <button class="dropbtn">选择国家</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="update(data1)" >Australia</a>
+        <a href="#" onclick="update(data2)" >Canada</a>
+        <a href="#" onclick="update(data3)" >Denmark</a>
+        <a href="#" onclick="update(data4)" >Poland</a>
+        <a href="#" onclick="update(data5)" >Spain</a>
+        <a href="#" onclick="update(data6)" >United Kingdom</a>
+        <a href="#" onclick="update(data7)" >Japan</a>
+        <a href="#" onclick="update(data8)" >France</a>
+      </div>
+    </div>
+
+
+    <!-- Create a div where the graph will take place -->
+    <div id="my_dataviz"></div>
+    
+    
+    
+    <script>
+    
+    var data1 = [
+       {group: "2001", value: 2585.631},
+       {group: "2002", value: 2776.333},
+       {group: "2003", value: 2776.272} ,
+       {group: "2004", value: 2512.307} ,
+       {group: "2005", value: 2520.124} ,
+       {group: "2006", value: 2482.611} ,
+       {group: "2007", value: 2444.737} ,
+       {group: "2008", value: 2512.381} ,
+       {group: "2009", value: 2597.932} ,
+       {group: "2010", value: 2378.123} ,
+       {group: "2011", value: 2507.024} ,
+       {group: "2012", value: 2518.107} ,
+       {group: "2013", value: 2414.193} ,
+       {group: "2014", value: 2499.565} ,
+       {group: "2015", value: 2384.729} ,
+       {group: "2016", value: 2465.597} ,
+       {group: "2017", value: 2287.739} ,
+       {group: "2018", value: 2083.004} ,
+       {group: "2019", value: 2197.911} ,
+       {group: "2020", value: 2122.282} ,
+       {group: "2021", value: 2221.654} ,
+    ];
+    
+    var data2 = [
+       {group: "2001", value: 2315.744} ,
+       {group: "2002", value: 2272.155} ,
+       {group: "2003", value: 2200.802} ,
+       {group: "2004", value: 2211.793} ,
+       {group: "2005", value: 2099.115} ,
+       {group: "2006", value: 1898.27} ,
+       {group: "2007", value: 1853.473} ,
+       {group: "2008", value: 1668.295} ,
+       {group: "2009", value: 1404.159} ,
+       {group: "2010", value: 1294.513} ,
+       {group: "2011", value: 1203.53} ,
+       {group: "2012", value: 1190.589} ,
+       {group: "2013", value: 1177.665} ,
+       {group: "2014", value: 1128.225} ,
+       {group: "2015", value: 1064.366} ,
+       {group: "2016", value: 1042.742} ,
+       {group: "2017", value: 947.867} ,
+       {group: "2018", value: 804.829} ,
+       {group: "2019", value: 711.675} ,
+       {group: "2020", value: 650.937} ,
+       {group: "2021", value: 640.548} ,
+    ];
+    
+    var data3 = [
+       {group: "2001", value: 29.854} ,
+       {group: "2002", value: 28.431} ,
+       {group: "2003", value: 35.295} ,
+       {group: "2004", value: 28.762} ,
+       {group: "2005", value: 26.357} ,
+       {group: "2006", value: 30.611} ,
+       {group: "2007", value: 28.269} ,
+       {group: "2008", value: 21.236} ,
+       {group: "2009", value: 15.59} ,
+       {group: "2010", value: 15.477} ,
+       {group: "2011", value: 14.07} ,
+       {group: "2012", value: 12.629} ,
+       {group: "2013", value: 12.716} ,
+       {group: "2014", value: 10.64} ,
+       {group: "2015", value: 9.574} ,
+       {group: "2016", value: 9.954} ,
+       {group: "2017", value: 10.205} ,
+       {group: "2018", value: 10.506} ,
+       {group: "2019", value: 9.269} ,
+       {group: "2020", value: 9.263} ,
+       {group: "2021", value: 8.54} ,
+    ];
+    
+    
+    var data4 = [
+       {group: "2001", value: 1282.444} ,
+       {group: "2002", value: 1210.526} ,
+       {group: "2003", value: 1168.681} ,
+       {group: "2004", value: 1147.916} ,
+       {group: "2005", value: 1128.943} ,
+       {group: "2006", value: 1199.202} ,
+       {group: "2007", value: 1109.859} ,
+       {group: "2008", value: 877.365} ,
+       {group: "2009", value: 758.204} ,
+       {group: "2010", value: 824.661} ,
+       {group: "2011", value: 776.27} ,
+       {group: "2012", value: 746.692} ,
+       {group: "2013", value: 702.34} ,
+       {group: "2014", value: 653.966} ,
+       {group: "2015", value: 638.453} ,
+       {group: "2016", value: 518.374} ,
+       {group: "2017", value: 505.503} ,
+       {group: "2018", value: 480.344} ,
+       {group: "2019", value: 396.301} ,
+       {group: "2020", value: 385.316} ,
+       {group: "2021", value: 392.303} ,
+    ];
+    
+    var data5 = [
+       {group: "2001", value: 1329.434}, 
+       {group: "2002", value: 1473.605}, 
+       {group: "2003", value: 1221.772}, 
+       {group: "2004", value: 1252.892}, 
+       {group: "2005", value: 1207.032}, 
+       {group: "2006", value: 1075.962}, 
+       {group: "2007", value: 1046.382}, 
+       {group: "2008", value: 384.418}, 
+       {group: "2009", value: 285.55}, 
+       {group: "2010", value: 244.83}, 
+       {group: "2011", value: 281.529}, 
+       {group: "2012", value: 284.804}, 
+       {group: "2013", value: 221.797}, 
+       {group: "2014", value: 242.552}, 
+       {group: "2015", value: 260.15}, 
+       {group: "2016", value: 216.759}, 
+       {group: "2017", value: 220.003}, 
+       {group: "2018", value: 198.566}, 
+       {group: "2019", value: 150.791}, 
+       {group: "2020", value: 127.489}, 
+       {group: "2021", value: 122.733}
+    ];
+    
+    var data6 = [
+       {group: "2001", value: 1223.197}, 
+       {group: "2002", value: 1102.377}, 
+       {group: "2003", value: 1073.011}, 
+       {group: "2004", value: 903.178}, 
+       {group: "2005", value: 784.478}, 
+       {group: "2006", value: 742.111}, 
+       {group: "2007", value: 650.359}, 
+       {group: "2008", value: 549.886}, 
+       {group: "2009", value: 456.086}, 
+       {group: "2010", value: 464.091}, 
+       {group: "2011", value: 430.206}, 
+       {group: "2012", value: 478.641}, 
+       {group: "2013", value: 415.314}, 
+       {group: "2014", value: 339.921}, 
+       {group: "2015", value: 267.078}, 
+       {group: "2016", value: 195.89}, 
+       {group: "2017", value: 188.52}, 
+       {group: "2018", value: 174.372}, 
+       {group: "2019", value: 154.092}, 
+       {group: "2020", value: 132.065}, 
+       {group: "2021", value: 125.432}
+    ];
+    
+    var data7 = [
+      {group: "2001", value: 1123.461},
+      {group: "2002", value: 1114.55},
+      {group: "2003", value: 1087.87},
+      {group: "2004", value: 1058.874},
+      {group: "2005", value: 1011.739},
+      {group: "2006", value: 973.393},
+      {group: "2007", value: 930.988},
+      {group: "2008", value: 864.451},
+      {group: "2009", value: 806.346},
+      {group: "2010", value: 776.115},
+      {group: "2011", value: 732.472},
+      {group: "2012", value: 728.513},
+      {group: "2013", value: 719.911},
+      {group: "2014", value: 711.56},
+      {group: "2015", value: 672.004},
+      {group: "2016", value: 637.711},
+      {group: "2017", value: 598.222},
+      {group: "2018", value: 561.813},
+      {group: "2019", value: 523.325},
+      {group: "2020", value: 335.207},
+      {group: "2021", value: 337.317}
+    ];
+    
+    var data8 = [
+      {group: "2001", value: 559.647},
+      {group: "2002", value: 515.756},
+      {group: "2003", value: 497.337},
+      {group: "2004", value: 475.622},
+      {group: "2005", value: 457.07},
+      {group: "2006", value: 424.228},
+      {group: "2007", value: 403.157},
+      {group: "2008", value: 345.926},
+      {group: "2009", value: 292.012},
+      {group: "2010", value: 268.895},
+      {group: "2011", value: 218.733},
+      {group: "2012", value: 215.874},
+      {group: "2013", value: 198.908},
+      {group: "2014", value: 156.729},
+      {group: "2015", value: 149.341},
+      {group: "2016", value: 130.452},
+      {group: "2017", value: 126.11},
+      {group: "2018", value: 120.454},
+      {group: "2019", value: 97.113},
+      {group: "2020", value: 88.601},
+      {group: "2021", value: 88.563}
+    ];
+    
+    
+    
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 70, left: 400},
+        width = 1100 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
+    
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+    
+    // X axis
+    var x = d3.scaleBand()
+      .range([ 0, width ])
+      .domain(data1.map(function(d) { return d.group; }))
+      .padding(0.2);
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(data1, function(d) { return d.value; })]) // 使用数据中的最大值作为域范围
+      .range([height, 0]);
+    svg.append("text")
+      .attr("transform", "rotate(-0)")
+      .attr("y", 380 - margin.left)
+      .attr("x", -50)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("单位（千吨）");
+    svg.append("g")
+      .attr("class", "myYaxis")
+      .call(d3.axisLeft(y));
+    
+    
+    
+    
+    // A function that create / update the plot for a given variable:
+    function update(data) {
+    
+      var u = svg.selectAll("rect")
+        .data(data)
+        u
+        .enter()
+        .append("rect")
+        .merge(u)
+        .transition()
+        .duration(1000)
+          .attr("x", function(d) { return x(d.group); })
+          .attr("y", function(d) { return y(d.value); })
+          .attr("width", x.bandwidth())
+          .attr("height", function(d) { return height - y(d.value); })
+          .attr("fill", "#69b3a2")
+          
+          
+    }
+    
+    // Initialize the plot with the first dataset
+    update(data1)
+    </script>
+
+
+
+
+
+</html>
